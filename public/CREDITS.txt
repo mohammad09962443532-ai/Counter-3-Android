@@ -1,0 +1,5 @@
+3D models used in this app:
+
+- "low poly soldier" by Kolos Studios (CC-BY)
+- "Wooden Crate" by Memorie (CC-BY)
+- "SG553 Assault Rifle" by wburton (CC-BY)
