@@ -25,11 +25,14 @@ jobs:
           node-version: '20'
           cache: npm
 
-      - name: Setup Java
+      - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
+
+      - name: Verify Java
+        run: java -version
 
       - name: Install project dependencies
         run: npm ci
