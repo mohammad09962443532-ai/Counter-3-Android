@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Install project dependencies
         run: npm ci
@@ -60,6 +60,9 @@ jobs:
           accept-android-sdk-licenses: true
           log-accepted-android-sdk-licenses: false
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+
+      - name: Check Java version
+        run: java -version
 
       - name: Check Capacitor
         run: npx cap --version
