@@ -23,18 +23,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build web application
-        run: npm run build
+          cache: npm
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Install Capacitor
+        run: npm install @capacitor/core @capacitor/cli @capacitor/android
+
+      - name: Build web application
+        run: npm run build
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
@@ -43,15 +47,16 @@ jobs:
           log-accepted-android-sdk-licenses: false
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
-      - name: Check Android SDK
-        run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          command -v sdkmanager
-          sdkmanager --version
-
       - name: Check Capacitor
         run: npx cap --version
+
+      - name: Check Capacitor configuration
+        run: |
+          if [ ! -f capacitor.config.ts ] && [ ! -f capacitor.config.json ] && [ ! -f capacitor.config.js ]; then
+            echo "ERROR: Capacitor config file is missing."
+            echo "Create capacitor.config.ts or capacitor.config.json in the project root."
+            exit 1
+          fi
 
       - name: Create Android project if missing
         run: |
