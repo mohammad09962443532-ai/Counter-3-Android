@@ -1,70 +1,76 @@
 name: Build Counter 3 Android APK
 
 on:
-workflow_dispatch:
-push:
-branches:
-- main
-- master
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
 
 permissions:
-contents: read
+  contents: read
 
 jobs:
-build:
-name: Build Android APK
-runs-on: ubuntu-latest
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  - name: Setup Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: 20
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  - name: Install dependencies
-    run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-  - name: Build web application
-    run: npm run build
+      - name: Build web application
+        run: npm run build
 
-  - name: Setup Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: '17'
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-  - name: Setup Android SDK
-    uses: android-actions/setup-android@v4
-    with:
-      accept-android-sdk-licenses: true
-      log-accepted-android-sdk-licenses: false
-      packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
-  - name: Check SDK manager
-    run: |
-      echo "ANDROID_HOME=$ANDROID_HOME"
-      echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-      command -v sdkmanager
-      sdkmanager --version
+      - name: Check Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          command -v sdkmanager
+          sdkmanager --version
 
-  - name: Check Capacitor
-    run: npx cap --version
+      - name: Check Capacitor
+        run: npx cap --version
 
-  - name: Sync Capacitor
-    run: npx cap sync android
+      - name: Create Android project if missing
+        run: |
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
 
-  - name: Build APK
-    working-directory: android
-    run: |
-      chmod +x gradlew
-      ./gradlew assembleDebug
+      - name: Sync Capacitor
+        run: npx cap sync android
 
-  - name: Upload APK
-    uses: actions/upload-artifact@v4
-    with:
-      name: Counter-3-APK
-      path: android/app/build/outputs/apk/debug/app-debug.apk
-      if-no-files-found: error
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Counter-3-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
